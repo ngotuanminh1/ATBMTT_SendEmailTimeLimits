@@ -168,14 +168,14 @@ python gui_app.py
 
 ## 🧑‍💻 Tác Giả
 
-* **Họ tên:** \[Tên của bạn]
-* **MSSV:** \[Mã số sinh viên]
-* **Lớp:** \[Tên lớp]
+* **Họ tên:** Ngô Tuấn Minh
+* **MSSV:** 1571020175
+* **Lớp:** Công Nghệ Thông Tin - 16-06
 
 ---
 
 ## 📌 License
 
-MIT License – Chỉ sử dụng cho mục đích học tập và nghiên cứu.
+
 
 ---
