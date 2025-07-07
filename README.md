@@ -154,7 +154,9 @@ python gui_app.py
 
 > 📌 Hình ảnh minh họạ GUI:
 
-![Giao diện GUI](img/f.png)
+![Giao diện Đăng nhập](img/gui.jpg)
+![Giao diện Log in Room](img/guii.jpg)
+![Giao diện InRoom](img/guiii.jpg)
 
 ---
 
