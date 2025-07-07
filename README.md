@@ -119,10 +119,10 @@ Tạo 4 file:
 
 ## 💻 Hướng Dẫn Sử Dụng
 
-### 1. Chạy Server (máy nhận)
+### 1. Chạy Giao Diện (máy nhận)
 
 ```bash
-python server.py
+python gui_app.py
 ```
 
 ### 2. Chạy Giao Diện Người Gửi
@@ -136,6 +136,17 @@ python gui_app.py
 * Chọn file cần gửi
 * Nhập thời hạn hiệu lực (mặc định: 24 giờ)
 * Nhấn **"Send"**
+
+### 4. Gửi qua LAN
+
+* Ở client máy nhận chọn nhận từ LAN
+* Ở client máy gửi chọn gửi qua LAN và nhập ip của máy nhận (2 máy phải cùng mạng LAN)
+* Sau khi hoàn tất file sẽ tự động giải mã và lưu về folder
+
+### 5. Mã hóa từ drive
+
+* Nhập link GG drive cần mã hóa (Link phải được công khai)
+* Sau khi hoàn tất sẽ tự động tải file trên drive về và mã hóa 
 
 ---
 

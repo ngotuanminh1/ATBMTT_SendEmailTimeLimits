@@ -12,17 +12,19 @@ import requests
 from urllib.parse import urlparse, parse_qs
 
 ROOM_DIR = "rooms"
-os.makedirs(ROOM_DIR, exist_ok=True)
+USER_FILE = "users.json"
+os.makedirs(ROOM_DIR, exist_ok=True) #khởi tạo thư mục lưu room và người dùng
 
 ctk.set_appearance_mode("Dark")
-ctk.set_default_color_theme("blue")
+ctk.set_default_color_theme("blue") # cấu hình giao diện
 
 class SecureApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Secure File Room")
-        self.geometry("800x500")
+        self.geometry("800x500") #khởi tạo ứng dụng 
 
+        self.logged_in_user = None
         self.room_name = ctk.StringVar()
         self.room_password = ctk.StringVar()
         self.filename = None
@@ -30,14 +32,120 @@ class SecureApp(ctk.CTk):
         self.pwd_hash = ""
         self.timer_label = None
 
-        self.build_login()
-
-    def build_login(self):
+        self.build_auth()
+    
+    def build_auth(self):
         for widget in self.winfo_children():
             widget.destroy()
 
+        frame = ctk.CTkFrame(self)
+        frame.place(relx=0.5, rely=0.5, anchor="center")
+
+        ctk.CTkLabel(frame, text="🔐 Đăng nhập hoặc Đăng ký", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=20)
+
+        self.auth_username = ctk.StringVar()
+        self.auth_password = ctk.StringVar()
+
+        ctk.CTkLabel(frame, text="Tên người dùng").pack()
+        ctk.CTkEntry(frame, textvariable=self.auth_username).pack(pady=5)
+        ctk.CTkLabel(frame, text="Mật khẩu").pack()
+        ctk.CTkEntry(frame, textvariable=self.auth_password, show="*").pack(pady=5)
+
+        ctk.CTkButton(frame, text="Đăng nhập", command=self.login_user).pack(pady=5)
+        ctk.CTkButton(frame, text="Đăng ký", command=self.register_user).pack()
+
+    def login_user(self):
+        username = self.auth_username.get().strip()
+        password = self.auth_password.get().strip()
+        if not username or not password:
+            messagebox.showerror("Lỗi", "Vui lòng điền đầy đủ tên đăng nhập và mật khẩu")
+            return
+
+        if not os.path.exists(USER_FILE):
+            messagebox.showerror("Lỗi", "Không có dữ liệu người dùng")
+            return
+
+        with open(USER_FILE, "r") as f:
+            users = json.load(f)
+
+        pwd_hash = hashlib.sha256(password.encode()).hexdigest()
+        if username in users and users[username] == pwd_hash:
+            self.logged_in_user = username
+            self.build_login()
+        else:
+            messagebox.showerror("Lỗi", "Sai tên đăng nhập hoặc mật khẩu")
+    def send_chat_message(self):
+        msg = self.chat_input.get().strip()
+        if not msg:
+            return
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        full_msg = f"[{timestamp}] {self.logged_in_user}: {msg}"
+        self.chat_display.insert("end", full_msg + "\n")
+        self.chat_display.see("end")
+        self.chat_input.delete(0, "end")
+
+        # Ghi vào file chat để người khác cùng phòng thấy (giả lập LAN, lưu trong room)
+        chat_log_path = self.room_file.replace(".json", "_chat.txt")
+        with open(chat_log_path, "a", encoding="utf-8") as f:
+            f.write(full_msg + "\n")
+    def update_chat_loop(self):
+        chat_log_path = self.room_file.replace(".json", "_chat.txt")
+        last_size = 0
+
+
+        def check_file():
+            nonlocal last_size
+            if os.path.exists(chat_log_path):
+                new_size = os.path.getsize(chat_log_path)
+            if new_size > last_size:
+                with open(chat_log_path, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                    self.chat_display.delete("1.0", "end")
+                    for line in lines[-20:]:  # hiển thị 20 dòng cuối
+                        self.chat_display.insert("end", line)
+                    self.chat_display.see("end")
+                last_size = new_size
+            self.after(2000, check_file)  # cập nhật mỗi 2s
+
+        check_file()
+
+    def register_user(self):
+        username = self.auth_username.get().strip()
+        password = self.auth_password.get().strip()
+        if not username or not password:
+            messagebox.showerror("Lỗi", "Vui lòng điền đầy đủ tên đăng nhập và mật khẩu")
+            return
+
+        if os.path.exists(USER_FILE):
+            with open(USER_FILE, "r") as f:
+                users = json.load(f)
+        else:
+            users = {}
+
+        if username in users:
+            messagebox.showerror("Lỗi", "Tên người dùng đã tồn tại")
+            return
+
+        users[username] = hashlib.sha256(password.encode()).hexdigest()
+        with open(USER_FILE, "w") as f:
+            json.dump(users, f, indent=4)
+
+        messagebox.showinfo("Thành công", "Đăng ký thành công. Bây giờ hãy đăng nhập.")
+    
+    def build_login(self):
+        if self.room_file and os.path.exists(self.room_file):
+            chat_log_path = self.room_file.replace(".json", "_chat.txt")
+            left_msg = f"[{datetime.now().strftime('%H:%M:%S')}] ⚠️ {self.logged_in_user} đã rời phòng"
+            with open(chat_log_path, "a", encoding="utf-8") as f:
+                f.write(left_msg + "\n")
+        for widget in self.winfo_children():
+            widget.destroy()
+        
+        
         wrapper = ctk.CTkFrame(self, width=350, height=300)
         wrapper.place(relx=0.5, rely=0.5, anchor="center")
+
+        ctk.CTkLabel(wrapper, text=f"👋 Xin chào, {self.logged_in_user}!", font=ctk.CTkFont(size=14)).pack(pady=(0, 10))
 
         ctk.CTkLabel(wrapper, text="🔐 Secure File Room", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=(10, 20))
 
@@ -49,7 +157,6 @@ class SecureApp(ctk.CTk):
 
         ctk.CTkButton(wrapper, text="🔓 Vào Room", command=self.enter_room).pack(pady=(20, 5), padx=20, fill="x")
         ctk.CTkButton(wrapper, text="➕ Tạo Room Mới", command=self.create_room).pack(padx=20, fill="x")
-
     def enter_room(self):
         room = self.room_name.get().strip()
         pwd = self.room_password.get().strip()
@@ -73,8 +180,16 @@ class SecureApp(ctk.CTk):
         except:
             messagebox.showerror("Lỗi", "File room bị lỗi hoặc sai định dạng")
             return
+        self.room_file = os.path.join(ROOM_DIR, room + ".json")
 
+        # Ghi log vào file chat để các thành viên trong phòng thấy
+        chat_log_path = self.room_file.replace(".json", "_chat.txt")
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        join_msg = f"[{timestamp}] ⚠️ {self.logged_in_user} đã vào phòng"
+        with open(chat_log_path, "a", encoding="utf-8") as f:
+            f.write(join_msg + "\n")
         self.build_room_ui(room)
+        self.update_chat_loop()
 
     def create_room(self):
         room = self.room_name.get().strip()
@@ -93,6 +208,7 @@ class SecureApp(ctk.CTk):
             json.dump({"pwd_hash": self.pwd_hash}, f, indent=4)
 
         self.build_room_ui(room)
+        self.update_chat_loop()
 
     def build_room_ui(self, room):
         for widget in self.winfo_children():
@@ -118,7 +234,20 @@ class SecureApp(ctk.CTk):
 
         self.log = ctk.CTkTextbox(right)
         self.log.pack(fill="both", expand=True)
+        chat_frame = ctk.CTkFrame(right)
+        chat_frame.pack(fill="x", pady=10)
 
+        self.chat_display = ctk.CTkTextbox(chat_frame, height=100)
+        self.chat_display.pack(fill="x", padx=5)
+
+        chat_input_frame = ctk.CTkFrame(chat_frame)
+        chat_input_frame.pack(fill="x", pady=5)
+
+        self.chat_input = ctk.CTkEntry(chat_input_frame)
+        self.chat_input.pack(side="left", fill="x", expand=True, padx=5)
+        self.chat_input.bind("<Return>", lambda event: self.send_chat_message())
+
+        ctk.CTkButton(chat_input_frame, text="Gửi", command=self.send_chat_message).pack(side="right", padx=5)
         self.timer_label = ctk.CTkLabel(left, text="")
         self.timer_label.pack(pady=(5, 0))
 
@@ -132,6 +261,7 @@ class SecureApp(ctk.CTk):
                 pass
 
             self.log_msg("📄 Đã tìm thấy file trong room. Bạn có thể giải mã.")
+            self.log_msg(f"👋 {self.logged_in_user} đã vào phòng.")
 
     def log_msg(self, msg):
         self.log.insert("end", msg + "\n")

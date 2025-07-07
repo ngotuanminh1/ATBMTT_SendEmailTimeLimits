@@ -1,0 +1,11 @@
+{
+    "iv": "9JRDeo30PtUiOaYFMbaMFg==",
+    "cipher": "xxahUBUF93cr3Pbk5bXPyVS3E46tVGFLYjJD/p39gIA=",
+    "hash": "fbdec52085d18daa6e6e4e84e836e7a89acf631e3b9d8319d5f82f11b1a030aa6bfd255e533d266c38533d43535c85d5594b3df96b291f56a669bcec784e4eb0",
+    "sig": "a797PDuxmaE46Uqdkxz5SNJjgLCpVBz5lF59JhBq/oKzI1pGuItUyWKnT1dWVC2YeGT0pgHVns9NCcKpRvvR4JFwx/LWfP1n0k80dpadL1mgEDQP/V7u0HlaTTvKye0lD96quxrO+ujxv0z8V3vLjI+Hy82hQImkGe9Ufh0xjtl8iazUJd7yknHiATuOc8hT6RSy9SFOqnrOXmC8ZWwXSgmjN35zQHpLvqWV1aGbc7KYkV59yNMLEIqGzsQ4zM99itw5CiGKfrgYhosbjDX8jsIO0QU5uxela9MpApLgGUu+0HZQCJJoKE+IyL5P34Phzd4MyKEVp8h8IVx0Ul/pjA==",
+    "exp": "2025-07-02T17:42:43.589872Z",
+    "encrypted_key": "GOgxW81DApNNl98PSUKJbJLzfpZOWGqKWeoCE/WDeoJu3KG/f9SV6ctC2bUWqi/GnrjEXayINIJ17way5HjoLk9fUd+MBckMH9LZ8+fYUpxWYhWOHrnxk4F3lcSqvrirGHfBcaZAuiiYSLFirLxiV0LDTl6YKoVBwmpJLYA7In2dCXaEzXRrCb928+ETC3tqEt+s52fMdMt9xJ+MqNJ7Y3HNOrhAOBQ5wNTO5PwKtwKjNzXDAh9pYbT5ClM84MrU9pd0vERTkMle0hqVblt0af3lKT588+/6A64irPDVVKRi7U55pDiFpuc/ZCwY+CqgdMH8UpqnoEWt5k+2OjOSIg==",
+    "filename": "email.txt",
+    "timestamp": "2025-07-01T17:42:43.589872",
+    "pwd_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+}
